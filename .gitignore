@@ -1,0 +1,18 @@
+# Dados fiscais — SPED (não versionar)
+*.txt
+*.TXT
+
+# Resultados gerados
+*.csv
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# Editor
+.vscode/
+*.swp
