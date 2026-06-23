@@ -1,56 +1,15 @@
-# sped-para-csv
+# Ferramentas SPED Fiscal
 
-Extrator de notas fiscais de entrada de arquivos SPED Fiscal (EFD ICMS/IPI), consolidadas em CSV.
+Conjunto de utilitários em Python para extração e conciliação de dados do **SPED Fiscal** (EFD ICMS/IPI) e da **GIA-SP**, voltados a varejo de combustíveis (vários postos).
 
-## O que faz
+Cada ferramenta fica na sua própria pasta, com README e launcher próprios:
 
-- Pergunta, em janelas de seleção, a pasta-raiz com os arquivos SPED (`.txt`) e a pasta onde salvar os CSVs
-- Varre a pasta-raiz **e todas as subpastas**, processando os arquivos em paralelo (um processo por núcleo da CPU) — dimensionado para milhares de arquivos
-- Extrai as notas de entrada: registro `C100` com `IND_OPER=0` e `COD_MOD=55` (NF-e), ignorando canceladas/denegadas/inutilizadas (`COD_SIT` 02, 03, 04, 05)
-- Deduplica por CNPJ do declarante + chave da NF-e, mantendo o arquivo mais recente (cobre SPED original + retificadora)
-- Nunca interrompe por causa de um arquivo com problema: registra o erro no log e continua
-- Detecta automaticamente o encoding de cada arquivo (UTF-8 ou Latin-1)
+| Pasta | Ferramenta | O que faz |
+|-------|-----------|-----------|
+| [`conversor-csv/`](conversor-csv/) | Conversor SPED → CSV | Extrai notas fiscais de entrada (C100/NF-e) e consolida em CSV. |
+| [`extrator-e111/`](extrator-e111/) | Extrator do Bloco E | Extrai E111/E112/E113 e gera Excel consolidado e por posto. |
+| [`gia-concilia/`](gia-concilia/) | Conciliação SPED × GIA | Concilia o ressarcimento de ICMS-ST (SP020799 × 007.99) por posto/período. |
 
-## Saídas
+Cada pasta traz o `.py`, um `README.md` e um `.bat` de execução (duplo clique no Windows; instala `openpyxl` quando necessário).
 
-| Arquivo | Conteúdo |
-|---------|----------|
-| `notas_entrada.csv` | Uma linha por nota: Razão Social (SPED), CNPJ da Sociedade (SPED), CNPJ do Fornecedor, Razão Social do Fornecedor, Data de Emissão, Chave XML, Valor Total da Nota |
-| `log_processamento.csv` | Uma linha por arquivo processado: empresa, período, nº de notas, status/erro |
-
-CSV no padrão Excel-BR: separador `;`, UTF-8 com BOM, decimal com vírgula e chave de 44 dígitos protegida contra notação científica.
-
-## Requisitos
-
-- Windows com Python 3.x instalado (somente biblioteca padrão — sem dependências externas)
-
-## Como usar
-
-1. Dê duplo clique em **`executar_sped_csv.bat`**
-2. Na primeira janela, selecione a pasta-raiz com os arquivos SPED
-3. Na segunda janela, selecione a pasta onde salvar os CSVs
-4. Acompanhe o progresso no terminal
-
-Ou pelo terminal:
-
-```bat
-python sped_para_csv.py                    :: abre as janelas de seleção
-python sped_para_csv.py C:\speds           :: saída na própria pasta de entrada
-python sped_para_csv.py C:\speds C:\saida  :: entrada e saída indicadas
-```
-
-## Estrutura de arquivos
-
-```
-SPEDNFE/
-├── executar_sped_csv.bat   # Script principal — duplo clique
-├── sped_para_csv.py        # Extrator SPED → CSV
-├── versionar.bat           # Commit + push da versão atual
-└── *.txt                   # Arquivos SPED (não versionados)
-```
-
-## Versão
-
-**v1.0.0** — junho/2026
-
-- v1.0.0: versão inicial — extração paralela de notas de entrada com deduplicação e log de auditoria
+**Requisitos:** Windows com Python 3.x. As ferramentas de Excel usam `openpyxl`.
